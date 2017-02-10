@@ -1,22 +1,54 @@
 import {initialize_controls} from './kio_controls'
 
 export function initializeKioProblem(ProblemClass, domNode, settings) {
-    let problem = new ProblemClass;
+    let problem = new ProblemClass(settings);
 
-    let kioapi = new KioApi(problem, domNode);
+    let loadingInfoDiv = createLoadingInfoElement();
+    domNode.appendChild(loadingInfoDiv);
 
-    kioapi.init_view(domNode, problem, settings);
+    if (problem.preloadManifest) {
+        let queue = createjs.LoadQueue();
+        queue.on("complete", finalizeInitialization, null, false, {loading_queue: queue});
+        queue.on("error", errorLoadingResources);
+        queue.on("progress", loadingProgressChanged);
 
-    kioapi.saveEmptySolution();
-    kioapi.loadSolution(kioapi.bestSolution());
-    kioapi.loadSolution(kioapi.autosavedSolution());
+        let manifest = problem.preloadManifest(); //TODO move settings to constructor, so manifest may depend on settings
+        queue.loadManifest(manifest);
+    } else
+        finalizeInitialization(null, {loading_queue: null});
 
-    kioapi.problem_is_initialized = true;
+    function finalizeInitialization(evt, {loading_queue}) {
+        domNode.removeChild(loadingInfoDiv);
+
+        let kioapi = new KioApi(problem, domNode, loading_queue);
+
+        kioapi.init_view(domNode, problem, settings);
+
+        kioapi.saveEmptySolution();
+        kioapi.loadSolution(kioapi.bestSolution());
+        kioapi.loadSolution(kioapi.autosavedSolution());
+
+        kioapi.problem_is_initialized = true;
+    }
+    
+    function errorLoadingResources() {
+        loadingInfoDiv.innerText = "Ошибка при загрузке задачи, попробуйте обновить страницу";
+    }
+    
+    function loadingProgressChanged(evt) {
+        loadingInfoDiv.innerText = "Загрузка " + evt.progress + "%";
+    }
+
+    function createLoadingInfoElement() {
+        let infoDiv = document.createElement("div");
+        infoDiv.className = "loading-info";
+        return infoDiv;
+    }
 }
 
 class KioApi {
 
-    constructor(problem, domNode) {
+    constructor(problem, domNode, loading_queue) {
         this.problem = problem;
         this.domNode = domNode;
         this.pid = dces2contest.get_problem_index($(domNode));
@@ -24,6 +56,8 @@ class KioApi {
         this.best = $(this.domNode).data('best-solution');
         this.bestResult = null;
         this.autosave_localstorage_key = 'kio-problem-' + this.problem.id() + '-autosave';
+
+        this.loading_queue = loading_queue;
 
         this.problem_is_initialized = false;
     }
@@ -89,6 +123,12 @@ class KioApi {
         for (let param of params) {
             let val1 = result1[param.name];
             let val2 = result2[param.name];
+
+            if (param.normalize) {
+                val1 = param.normalize(val1);
+                val2 = param.normalize(val2);
+            }
+
             let diff = param.ordering === 'maximize' ? val1 - val2 : val2 - val1;
             if (Math.abs(diff) > 1e-9) {
                 if (diff > 0)
@@ -99,6 +139,10 @@ class KioApi {
         }
 
         return 0;
+    }
+
+    get_resource(id) {
+        return this.loading_queue.getResult(id);
     }
 
     init_view(domNode, problem, settings) {

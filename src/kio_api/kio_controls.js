@@ -42,7 +42,8 @@ export class InfoPanel {
     setParam(name, value) {
         // let {ind, param} = this.getParam(name);
         let param = this.param_name_2_param[name];
-        this.param_name_2_value_element[name].innerText = this.paramViewFunction(param)(value);
+        if (param)
+            this.param_name_2_value_element[name].innerText = this.paramViewFunction(param)(value);
     }
 
     setParams(nameValueObject) {
@@ -86,6 +87,9 @@ export class InfoPanel {
 
         //init body
         for (let param of this.params) {
+            if (!param.title) //no title means the param is invisible
+                continue;
+
             let tr = document.createElement('tr');
             let td_name = document.createElement('td');
             let td_val = document.createElement('td');

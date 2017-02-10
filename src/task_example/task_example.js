@@ -10,8 +10,14 @@
 //это требуется для компиляции scss файла со стилями для задачи, без webpack эта строка не нужна
 import './task_example.scss'
 
-//создаем класс TaskExample, конструктор может быть пустым, инициализация происходит позже
-export function TaskExample() {
+/**
+ * создаем класс TaskExample, конструктор может быть пустым, инициализация происходит позже
+ * @param settings произвольный объект настроек "манпулятора", в первую очередь, из этого объекта нужно брать
+ * информацию об уровне. Можно реализовать это прямолинейно так, что settings = {level : 2}
+ * @constructor
+ */
+export function TaskExample(settings) {
+    this.settings = settings;
 }
 
 //следующие функции требуется реализовать, это как будто реализация интерфейса
@@ -28,13 +34,10 @@ TaskExample.prototype.id = function () {
  * Функция инициализации, в этой функции можно создавать интерфейс задачи и уже можно пользоваться KioApi
  * @param domNode dom-узел, который нужно наполнять содержимым задачи
  * @param kioapi ссылка на api для совершения всех действий с задачей
- * @param settings произвольный объект настроек "манпулятора", в первую очередь, из этого объекта нужно брать
- * информацию об уровне. Можно реализовать это прямолинейно так, что settings = {level : 2}
  */
-TaskExample.prototype.initialize = function (domNode, kioapi, settings) {
+TaskExample.prototype.initialize = function (domNode, kioapi) {
     //сохраняем данные для будущего использования
     this.kioapi = kioapi;
-    this.settings = settings;
     this.domNode = domNode;
 
     //settings могут иметь произвольные данные для инициализации, например, уровень
