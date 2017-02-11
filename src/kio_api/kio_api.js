@@ -22,7 +22,7 @@ export function initializeKioProblem(ProblemClass, domNode, settings) {
 
         let kioapi = new KioApi(problem, domNode, loading_queue);
 
-        kioapi.init_view(domNode, problem, settings);
+        kioapi.init_view(domNode, problem);
 
         kioapi.saveEmptySolution();
         kioapi.loadSolution(kioapi.bestSolution());
@@ -145,7 +145,7 @@ class KioApi {
         return this.loading_queue.getResult(id);
     }
 
-    init_view(domNode, problem, settings) {
+    init_view(domNode, problem) {
         let problemDiv = document.createElement('div');
         let controlsDiv = document.createElement('div');
 
@@ -155,7 +155,7 @@ class KioApi {
         ({results_info_panel: this.results_info_panel, record_info_panel: this.record_info_panel}
             = initialize_controls(controlsDiv, this));
 
-        problem.initialize(problemDiv, this, settings);
+        problem.initialize(problemDiv, this);
     }
 }
 
