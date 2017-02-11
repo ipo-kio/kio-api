@@ -7,7 +7,7 @@ export function initializeKioProblem(ProblemClass, domNode, settings) {
     domNode.appendChild(loadingInfoDiv);
 
     if (problem.preloadManifest) {
-        let queue = createjs.LoadQueue();
+        let queue = new createjs.LoadQueue();
         queue.on("complete", finalizeInitialization, null, false, {loading_queue: queue});
         queue.on("error", errorLoadingResources);
         queue.on("progress", loadingProgressChanged);
