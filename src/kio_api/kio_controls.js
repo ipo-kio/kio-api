@@ -39,17 +39,16 @@ export class InfoPanel {
         this.inject_inside(this.domNode);
     }
 
-    setParam(name, value) {
-        // let {ind, param} = this.getParam(name);
-        let param = this.param_name_2_param[name];
-        if (param)
-            this.param_name_2_value_element[name].innerText = this.paramViewFunction(param)(value);
-    }
-
     setParams(nameValueObject) {
-        for (let name in nameValueObject)
-            if (nameValueObject.hasOwnProperty(name))
-                this.setParam(name, nameValueObject[name]);
+        let ind = 0;
+        for (let param of this.params) {
+            if (!param.title)
+                continue;
+            let td_val = this.value_elements[ind];
+            let value = nameValueObject[param.name];
+            td_val.innerText = this.paramViewFunction(param)(value);
+            ind++;
+        }
     }
 
     paramViewFunction(param) {
@@ -86,6 +85,7 @@ export class InfoPanel {
         td_head.innerText = this.title;
 
         //init body
+        this.value_elements = [];
         for (let param of this.params) {
             if (!param.title) //no title means the param is invisible
                 continue;
@@ -103,8 +103,9 @@ export class InfoPanel {
 
             table_body.appendChild(tr);
 
-            this.param_name_2_value_element[param.name] = td_val;
-            this.param_name_2_param[param.name] = param;
+            // this.param_name_2_value_element[param.name] = td_val;
+            // this.param_name_2_param[param.name] = param;
+            this.value_elements.push(td_val);
         }
 
         domNode.appendChild(table);
