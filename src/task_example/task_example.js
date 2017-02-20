@@ -80,6 +80,13 @@ TaskExample.prototype.parameters = function () {
     ];
 };
 
+/*TaskExample.prototype.preloadManifest = function() {
+    return [
+        {id: "1", src: "task_example/1.png"},
+        {id: "2", src: "task_example/2.png"}
+    ];
+};*/
+
 /**
  * Возвращает текущее решение в виде объекта, он будет сериализован с помощью JSON.stringify для хранения и передачи по сети
  */
