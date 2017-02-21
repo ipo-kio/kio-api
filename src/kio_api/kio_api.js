@@ -59,7 +59,8 @@ class KioApi {
         this.domNode = domNode;
         this.pid = dces2contest.get_problem_index($(domNode));
 
-        this.best_from_server = $(this.domNode).data('best-solution');
+        this.best_from_server = best_solutions[dces2contest.get_problem_index($(domNode))];
+
         this.best = null;
         this.bestResult = null;
         this.autosave_localstorage_key = 'kio-problem-' + this.problem.id() + '-autosave';
@@ -149,7 +150,7 @@ class KioApi {
         return 0;
     }
 
-    get_resource(id) {
+    getResource(id) {
         return this.loading_queue.getResult(id);
     }
 
@@ -169,6 +170,8 @@ class KioApi {
 
 dces2contest.register_solution_loader('kio-online', load_kio_solution);
 
+let best_solutions = [];
+
 function load_kio_solution($problem_div, answer) {
     if (!answer)
         return;
@@ -178,5 +181,6 @@ function load_kio_solution($problem_div, answer) {
 
     let solution = JSON.parse(answer.sol);
 
-    $problem_div.data('best-solution', solution);
+    let pid = dces2contest.get_problem_index($problem_div);
+    best_solutions[pid] = solution;
 }

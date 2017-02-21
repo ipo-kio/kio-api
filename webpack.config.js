@@ -8,9 +8,6 @@ const merge = require('deepmerge');
 const path = require('path');
 
 const sourceFolders = [
-    // path.join(__dirname, 'src', 'task_example'),
-    // path.join(__dirname, 'src', 'kio_api'),
-    // path.join(__dirname, 'src', 'kio_test_box')
     path.join(__dirname, 'src')
 ];
 
@@ -53,7 +50,7 @@ module.exports = function (env) {
                 },
                 {
                     // test: /.*/,
-                    include: [path.join(__dirname, 'src/kio_test_box/static')],
+                    include: [path.join(__dirname, 'src/kio_test_box/static'), path.join(__dirname, 'src/task_example/static')],
                     use: [{
                         loader: 'file-loader',
                         options: {

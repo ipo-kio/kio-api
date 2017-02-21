@@ -9,6 +9,7 @@
 
 //это требуется для компиляции scss файла со стилями для задачи, без webpack эта строка не нужна
 import './task_example.scss'
+import './static/collatz_conjecture.png'
 
 /**
  * создаем класс TaskExample, конструктор может быть пустым, инициализация происходит позже
@@ -80,12 +81,11 @@ TaskExample.prototype.parameters = function () {
     ];
 };
 
-/*TaskExample.prototype.preloadManifest = function() {
+TaskExample.prototype.preloadManifest = function() {
     return [
-        {id: "1", src: "task_example/1.png"},
-        {id: "2", src: "task_example/2.png"}
+        {id: "1", src: "collatz_conjecture.png"}
     ];
-};*/
+};
 
 /**
  * Возвращает текущее решение в виде объекта, он будет сериализован с помощью JSON.stringify для хранения и передачи по сети
@@ -113,10 +113,16 @@ TaskExample.prototype.loadSolution = function (solution) {
 
 //здесь можно воспользоваться шаблонизатором
 TaskExample.prototype.initInterface = function ($domNode) {
+    var $input_output_container = $("<div class='kio-collatz-input-output-wrapper'>");
     this.$input = $("<input class='number-input' size='3'>");
     this.$output = $("<textarea class='steps-view' readonly='readonly'></textarea>");
+    var img = this.kioapi.getResource('1');
+    img.className = 'kio-collatz-info-image';
 
-    $domNode.append(this.$input, this.$output);
+    $domNode.append(img, $input_output_container);
+    $input_output_container.append(this.$input, this.$output);
+
+    //add image
 
     var thisProblem = this;
 
