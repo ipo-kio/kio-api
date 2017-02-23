@@ -4,28 +4,26 @@ export function initialize_controls(controlsDiv, kioapi) {
     let results_info_panel = new InfoPanel("Результат", kioapi.problem.parameters());
     let record_info_panel = new InfoPanel("Рекорд", kioapi.problem.parameters());
 
-    let info_panels_div = document.createElement('div');
-    let buttons_div = document.createElement('div');
+    controlsDiv.appendChild(results_info_panel.domNode);
+    controlsDiv.appendChild(record_info_panel.domNode);
 
-    info_panels_div.appendChild(results_info_panel.domNode);
-    info_panels_div.appendChild(record_info_panel.domNode);
+    results_info_panel.domNode.className += " kio-base-results-info-panel";
+    record_info_panel.domNode.className += " kio-base-record-info-panel";
 
-    results_info_panel.domNode.className += " kio-results-info-panel";
-    record_info_panel.domNode.className += " kio-record-info-panel";
-
-    let button_clear = new Button('Очистить', function() {
+    let button_clear = new Button('Очистить решение', function() {
         kioapi.problem.loadSolution(kioapi.emptySolution);
     });
     let button_load_record = new Button('Загрузить рекорд', function() {
         kioapi.problem.loadSolution(kioapi.best);
     });
 
-    buttons_div.appendChild(button_clear.domNode);
-    buttons_div.appendChild(button_load_record.domNode);
-    buttons_div.className = 'kio-control-buttons-area';
+    results_info_panel.domNode.appendChild(button_clear.domNode);
+    record_info_panel.domNode.appendChild(button_load_record.domNode);
 
-    controlsDiv.appendChild(info_panels_div);
-    controlsDiv.appendChild(buttons_div);
+    controlsDiv.className = 'kio-base-controls-container';
+    let spanner = document.createElement('div');
+    spanner.className = 'kio-base-clear-both';
+    controlsDiv.appendChild(spanner);
 
     return {results_info_panel, record_info_panel};
 }
@@ -62,7 +60,7 @@ export class InfoPanel {
     }
 
     inject_inside(domNode) {
-        domNode.className = 'kio-info-panel';
+        domNode.className = 'kio-base-info-panel';
 
         this.param_name_2_param = {};
         this.param_name_2_value_element = {};
@@ -71,7 +69,7 @@ export class InfoPanel {
         let table_head = document.createElement('thead');
         let table_body = document.createElement('tbody');
 
-        table_head.className = 'kio-info-panel-head';
+        table_head.className = 'kio-base-info-panel-head';
 
         table.appendChild(table_head);
         table.appendChild(table_body);
@@ -96,8 +94,8 @@ export class InfoPanel {
             tr.appendChild(td_name);
             tr.appendChild(td_val);
 
-            td_name.className = 'kio-info-panel-param-name';
-            td_val.className = 'kio-info-panel-param-value';
+            td_name.className = 'kio-base-info-panel-param-name';
+            td_val.className = 'kio-base-info-panel-param-value';
 
             td_name.innerText = param.title;
 
@@ -116,7 +114,7 @@ export class Button {
 
     constructor(title, handler) {
         this.domNode = document.createElement('button');
-        this.domNode.className = "kio-control-button";
+        this.domNode.className = "kio-base-control-button";
         this.title = title;
         $(this.domNode).click(handler);
     }

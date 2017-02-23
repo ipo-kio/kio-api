@@ -158,6 +158,8 @@ class KioApi {
         let problemDiv = document.createElement('div');
         let controlsDiv = document.createElement('div');
 
+        problemDiv.className = 'kio-base-box';
+
         domNode.appendChild(problemDiv);
         domNode.appendChild(controlsDiv);
 
