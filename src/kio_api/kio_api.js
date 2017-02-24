@@ -166,7 +166,8 @@ class KioApi {
         ({results_info_panel: this.results_info_panel, record_info_panel: this.record_info_panel}
             = initialize_controls(controlsDiv, this));
 
-        problem.initialize(problemDiv, this);
+        let preferred_width = $(domNode).width() - 12;
+        problem.initialize(problemDiv, this, preferred_width); //2 * margin == 6
     }
 }
 

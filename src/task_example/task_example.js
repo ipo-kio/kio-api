@@ -35,8 +35,11 @@ TaskExample.prototype.id = function () {
  * Функция инициализации, в этой функции можно создавать интерфейс задачи и уже можно пользоваться KioApi
  * @param domNode dom-узел, который нужно наполнять содержимым задачи
  * @param kioapi ссылка на api для совершения всех действий с задачей
+ * @param preferred_width width of domNode that is more
  */
-TaskExample.prototype.initialize = function (domNode, kioapi) {
+TaskExample.prototype.initialize = function (domNode, kioapi, preferred_width) {
+    console.log('preferred width in problem initialization', preferred_width);
+
     //сохраняем данные для будущего использования
     this.kioapi = kioapi;
     this.domNode = domNode;
