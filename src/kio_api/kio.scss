@@ -101,7 +101,16 @@
   margin-top: 8px;
   clear: both;
   background-color: #cccccc;
-  @extend .kio-base-push-and-pull;
-  background-position: center;
-  background-repeat: no-repeat;
+  padding: 0.2em 0.4em;
+  font-family: Verdana, sans-serif;
+
+  .kio-base-info-panels-container {
+    @extend .kio-base-push-and-pull;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .title {
+    font-weight: bold;
+  }
 }

@@ -1,11 +1,16 @@
 import './kio.scss'
 
+import {StoredSolutions} from './stored_solutions'
+
 export function initialize_controls(controlsDiv, kioapi) {
     let results_info_panel = new InfoPanel("Результат", kioapi.problem.parameters());
     let record_info_panel = new InfoPanel("Рекорд", kioapi.problem.parameters());
+    let info_panels_container = document.createElement('div');
+    info_panels_container.className = 'kio-base-info-panels-container';
 
-    controlsDiv.appendChild(results_info_panel.domNode);
-    controlsDiv.appendChild(record_info_panel.domNode);
+    info_panels_container.appendChild(results_info_panel.domNode);
+    info_panels_container.appendChild(record_info_panel.domNode);
+    controlsDiv.appendChild(info_panels_container);
 
     results_info_panel.domNode.className += " kio-base-results-info-panel";
     record_info_panel.domNode.className += " kio-base-record-info-panel";
@@ -23,7 +28,10 @@ export function initialize_controls(controlsDiv, kioapi) {
     controlsDiv.className = 'kio-base-controls-container';
     let spanner = document.createElement('div');
     spanner.className = 'kio-base-clear-both';
-    controlsDiv.appendChild(spanner);
+    info_panels_container.appendChild(spanner);
+
+    let ss = new StoredSolutions(kioapi);
+    controlsDiv.appendChild(ss.domNode);
 
     return {results_info_panel, record_info_panel};
 }

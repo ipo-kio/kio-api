@@ -16,14 +16,30 @@ export function submit_answer(problem_id, answer) {
     localStorage.setItem(get_local_storage_key(), answerString);
 }
 
-export function save_problem_data (problem_id, data_key, value) {
+export function save_problem_data(problem_id, data_key, value) {
     let key = get_local_storage_key_for_data_key(problem_id, data_key);
     localStorage.setItem(key, value);
 }
 
-export function get_problem_data (problem_id, data_key) {
+export function get_problem_data(problem_id, data_key) {
     let key = get_local_storage_key_for_data_key(problem_id, data_key);
     return localStorage.getItem(key);
+}
+
+export function get_all_problem_data_keys(problem_id) {
+    let res = [];
+    let problem_key = get_local_storage_key(problem_id);
+    let prefix = problem_key + '-';
+    let prefix_len = prefix.length;
+
+    //iterate all keys http://stackoverflow.com/a/8419509/1826120
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (key.substr(0, prefix_len) == prefix)
+            res.push(key.substr(prefix.length));
+    }
+
+    return res;
 }
 
 const solutions_loaders_registry = {};
