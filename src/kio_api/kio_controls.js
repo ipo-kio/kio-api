@@ -5,6 +5,10 @@ import {StoredSolutions} from './stored_solutions'
 export function initialize_controls(controlsDiv, kioapi) {
     let results_info_panel = new InfoPanel("Результат", kioapi.problem.parameters());
     let record_info_panel = new InfoPanel("Рекорд", kioapi.problem.parameters());
+
+    kioapi.results_info_panel = results_info_panel;
+    kioapi.record_info_panel = record_info_panel;
+
     let info_panels_container = document.createElement('div');
     info_panels_container.className = 'kio-base-info-panels-container';
 
@@ -15,10 +19,10 @@ export function initialize_controls(controlsDiv, kioapi) {
     results_info_panel.domNode.className += " kio-base-results-info-panel";
     record_info_panel.domNode.className += " kio-base-record-info-panel";
 
-    let button_clear = new Button('Очистить решение', function() {
+    let button_clear = new Button('Очистить решение', function () {
         kioapi.problem.loadSolution(kioapi.emptySolution);
     });
-    let button_load_record = new Button('Загрузить рекорд', function() {
+    let button_load_record = new Button('Загрузить рекорд', function () {
         kioapi.problem.loadSolution(kioapi.best);
     });
 
@@ -32,8 +36,6 @@ export function initialize_controls(controlsDiv, kioapi) {
 
     let ss = new StoredSolutions(kioapi);
     controlsDiv.appendChild(ss.domNode);
-
-    return {results_info_panel, record_info_panel};
 }
 
 export class InfoPanel {
@@ -115,6 +117,21 @@ export class InfoPanel {
         }
 
         domNode.appendChild(table);
+    }
+
+    as_string(nameValueObject) {
+        if (!nameValueObject)
+            return '-';
+
+        let res = [];
+        for (let param of this.params) {
+            if (!param.title)
+                continue;
+            let value = nameValueObject[param.name];
+            res.push(this.paramViewFunction(param)(value));
+        }
+
+        return res.join(', ');
     }
 }
 

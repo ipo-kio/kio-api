@@ -41,7 +41,7 @@ export class StoredSolutions {
             if (!name)
                 return;
 
-            let sol = Solution.create(this, name, this.kio_api.problem.solution());
+            let sol = Solution.create(this, name, this.kio_api.problem.solution(), this.kio_api.last_submitted_result);
             if (this.solutions_node.childNodes.length == 0)
                 this.solutions_node.append(sol.domNode);
             else
@@ -71,13 +71,14 @@ class Solution {
         let problemData = JSON.parse(problemDataSerialized);
         let name = problemData.name;
         let solution = problemData.solution;
+        let result = problemData.result;
 
-        return new Solution(stored_solutions, id, name, solution);
+        return new Solution(stored_solutions, id, name, solution, result);
     }
 
-    static create(stored_solutions, name, solution) {
+    static create(stored_solutions, name, solution, result) {
         let id = Solution.makeid(10);
-        let sol = new Solution(stored_solutions, id, name, solution);
+        let sol = new Solution(stored_solutions, id, name, solution, result);
         sol.save();
         return sol;
     }
@@ -93,13 +94,14 @@ class Solution {
         return text;
     }
 
-    constructor(stored_solutions, id, name, solution) {
+    constructor(stored_solutions, id, name, solution, result) {
         this.stored_solutions = stored_solutions;
         this.kio_api = stored_solutions.kio_api;
         this.id = id;
         this.data_key = 'save-' + id;
         this.name = name;
         this.solution = solution;
+        this.result = result;
         this.init_interface();
     }
 
@@ -110,7 +112,8 @@ class Solution {
     save() {
         dces2contest.save_problem_data(this.kio_api.pid, 'save-' + this.id, JSON.stringify({
             name: this.name,
-            solution: this.solution
+            solution: this.solution,
+            result: this.result
         }));
     }
 
@@ -135,14 +138,19 @@ class Solution {
 
         let td1 = document.createElement('td');
         let td2 = document.createElement('td');
+        let td3 = document.createElement('td');
         td1.className = 'first';
+        td3.className = 'second';
         td1.appendChild(this.nameNode);
         td2.appendChild(this.loadButton);
         td2.appendChild(this.removeButton);
         this.domNode.appendChild(td1);
+        this.domNode.appendChild(td3);
         this.domNode.appendChild(td2);
 
-        //TODO третий столбик - значения параметров
+        td3.innerText = this.kio_api.results_info_panel.as_string(this.result);
+
         //TODO порядок сохраненных решений перемешивается
     }
+
 }

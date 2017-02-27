@@ -36,11 +36,11 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
 
         kioapi.problem_is_initialized = true;
     }
-    
+
     function errorLoadingResources() {
         loadingInfoDiv.innerText = "Ошибка при загрузке задачи, попробуйте обновить страницу";
     }
-    
+
     function loadingProgressChanged(evt) {
         loadingInfoDiv.innerText = "Загрузка " + evt.progress + "%";
     }
@@ -105,6 +105,8 @@ class KioApi {
     }
 
     submitResult(result) {
+        this.last_submitted_result = result;
+
         this.results_info_panel.setParams(result);
 
         this.autosaveSolution();
@@ -163,8 +165,7 @@ class KioApi {
         domNode.appendChild(problemDiv);
         domNode.appendChild(controlsDiv);
 
-        ({results_info_panel: this.results_info_panel, record_info_panel: this.record_info_panel}
-            = initialize_controls(controlsDiv, this));
+        initialize_controls(controlsDiv, this);
 
         let preferred_width = $(domNode).width() - 12;
         problem.initialize(problemDiv, this, preferred_width); //2 * margin == 6
