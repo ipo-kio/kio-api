@@ -74,6 +74,17 @@ TaskExample.prototype.parameters = function () {
                       // должна возвращать строку для отображения пользователю
         },
         {
+            name: "info1",
+            title: "Информационный параметр",
+            view: function (v) { //отображаем вещественное число как две точки после запятой, и потом процент
+                if (!v) v = 0; //эта функция должна завершаться без ошибок для любых входных данных.
+                return v.toFixed(2) + "%";
+            },
+            normalize: function(v) { //перед сравнением параметра значение превращается в 0
+                return 0;
+            }
+        },
+        {
             name: "max",
             title: "Максимальное число",
             ordering: 'minimize',
@@ -141,7 +152,9 @@ TaskExample.prototype.initInterface = function ($domNode) {
             //проверки.
             thisProblem.kioapi.submitResult({
                 steps: thisProblem.process.length(),
-                max: thisProblem.process.max()
+                max: thisProblem.process.max(),
+                info1: Math.random() // бессмысленный информационный параметр,
+                                     // в реальной программе параметры должны быть детерминировны условием
             });
         thisProblem.updateView();
     });
