@@ -43,7 +43,7 @@ export class StoredSolutions {
 
             let sol = Solution.create(this, name, this.kio_api.problem.solution(), this.kio_api.last_submitted_result);
             if (this.solutions_node.childNodes.length == 0)
-                this.solutions_node.append(sol.domNode);
+                this.solutions_node.appendChild(sol.domNode);
             else
                 this.solutions_node.insertBefore(sol.domNode, this.solutions_node.childNodes[0]);
 
