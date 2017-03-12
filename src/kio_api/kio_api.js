@@ -23,16 +23,37 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
     } else
         finalizeInitialization(null, {loading_queue: null});
 
+    let load_best_from_server = true;
+    let load_autosaved = true;
+
     function finalizeInitialization(evt, {loading_queue}) {
-        domNode.removeChild(loadingInfoDiv);
+        if (!load_best_from_server)
+            console.debug('trying to reinit without loading best from server');
+        if (!load_autosaved)
+            console.debug('trying to reinit without loading autosaved');
+
+        if (load_best_from_server && load_autosaved) //remove only the first time
+            domNode.removeChild(loadingInfoDiv);
 
         let kioapi = new KioApi(problem, domNode, loading_queue);
 
         kioapi.init_view(domNode, problem);
 
         kioapi.saveEmptySolution();
-        kioapi.loadSolution(kioapi.best_from_server);
-        kioapi.loadSolution(kioapi.autosavedSolution());
+
+        if (load_best_from_server && !kioapi.loadSolution(kioapi.best_from_server, 'best-from-server')) {
+            load_best_from_server = false;
+            kioapi.uninit_view(domNode);
+            finalizeInitialization(evt, {loading_queue});
+            return;
+        }
+        //TODO get rid of code duplication
+        if (load_autosaved && !kioapi.loadSolution(kioapi.autosavedSolution(), 'autosaved')) {
+            load_autosaved = false;
+            kioapi.uninit_view(domNode);
+            finalizeInitialization(evt, {loading_queue});
+            return;
+        }
 
         kioapi.problem_is_initialized = true;
     }
@@ -42,7 +63,7 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
     }
 
     function loadingProgressChanged(evt) {
-        loadingInfoDiv.innerText = "Загрузка " + evt.progress + "%";
+        loadingInfoDiv.innerText = "Загрузка " + Math.round(100 * evt.progress) + "%";
     }
 
     function createLoadingInfoElement() {
@@ -70,13 +91,38 @@ class KioApi {
         this.problem_is_initialized = false;
     }
 
+    //FIXME here 1
+    submitGaEvent(category, action, label) {
+        if ('ga' in window) {
+            ga('set', 'nonInteraction', true);
+            ga('send', 'event', {
+                eventCategory: category,
+                eventAction: action,
+                eventLabel: navigator.userAgent + (label ? ' -> ' + label : ''),
+                eventValue: 0
+            });
+        }
+    }
+
     saveEmptySolution() {
         this.emptySolution = this.problem.solution();
     }
 
-    loadSolution(solution) {
-        if (solution !== null)
-            this.problem.loadSolution(solution);
+    //returns was loading ok or not
+    loadSolution(solution, message) {
+        if (solution !== null) {
+            try {
+                this.problem.loadSolution(solution);
+                return true;
+            } catch (e) {
+                this.submitGaEvent(
+                    'Failed to load solution',
+                    JSON.stringify(solution),
+                    this.problem.id() + (message ? ' ' + message : '')
+                );
+                return false;
+            }
+        }
     }
 
     bestSolution() {
@@ -170,6 +216,11 @@ class KioApi {
         let preferred_width = $(domNode).width() - 12;
         problem.initialize(problemDiv, this, preferred_width); //2 * margin == 6
     }
+
+    uninit_view(domNode) {
+        while (domNode.firstChild)
+            domNode.removeChild(domNode.firstChild);
+    }
 }
 
 dces2contest.register_solution_loader('kio-online', load_kio_solution);
@@ -188,3 +239,5 @@ function load_kio_solution($problem_div, answer) {
     let pid = dces2contest.get_problem_index($problem_div);
     best_solutions[pid] = solution;
 }
+
+//TODO do not fail on non-parsable solutions

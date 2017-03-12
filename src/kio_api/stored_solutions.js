@@ -125,7 +125,7 @@ class Solution {
         this.nameNode.innerText = this.name;
 
         this.loadButton = new Button('Загрузить', e => {
-            this.kio_api.problem.loadSolution(this.solution);
+            this.kio_api.loadSolution(this.solution);
         }).domNode;
         this.removeButton = new Button('Ctrl+Удалить', e => {
             if (!e.ctrlKey)

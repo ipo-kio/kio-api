@@ -8,7 +8,9 @@ const merge = require('deepmerge');
 const path = require('path');
 
 const sourceFolders = [
-    path.join(__dirname, 'src')
+    path.join(__dirname, 'src'),
+    path.join(__dirname, 'node_modules'),
+    path.join(__dirname, 'node_modules/babel-polyfill/node_modules') //TODO get rid of this wtf
 ];
 
 //envirnoment env.mode = 'prod'|'dev'
@@ -16,7 +18,7 @@ const sourceFolders = [
 module.exports = function (env) {
     let config = {
         entry: {
-            'kio_api': './src/kio_api/kio_api.js',
+            'kio_api': ['babel-polyfill', './src/kio_api/kio_api.js'],
             'dces2contest': './src/kio_test_box/dces2contest.js',
             'task_example': './src/task_example/task_example.js'
         },
@@ -26,7 +28,7 @@ module.exports = function (env) {
             library: '[name]'
         },
         resolve: {
-            modules: sourceFolders
+            modules: sourceFolders,
         },
         module: {
             rules: [

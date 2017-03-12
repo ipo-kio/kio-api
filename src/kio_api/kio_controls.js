@@ -20,10 +20,10 @@ export function initialize_controls(controlsDiv, kioapi) {
     record_info_panel.domNode.className += " kio-base-record-info-panel";
 
     let button_clear = new Button('Очистить решение', function () {
-        kioapi.problem.loadSolution(kioapi.emptySolution);
+        kioapi.loadSolution(kioapi.emptySolution);
     });
     let button_load_record = new Button('Загрузить рекорд', function () {
-        kioapi.problem.loadSolution(kioapi.best);
+        kioapi.loadSolution(kioapi.best);
     });
 
     results_info_panel.domNode.appendChild(button_clear.domNode);

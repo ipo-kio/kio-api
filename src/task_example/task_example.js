@@ -118,6 +118,11 @@ TaskExample.prototype.loadSolution = function (solution) {
     if (!solution || !solution.x)
         return;
     var x = solution.x;
+
+    //проверка, что если при загрузке решения возникает ошибка, то kioapi пересоздаст задачу
+    if (x == "error")
+        x = x.error.error; //must produce exception
+
     if (x <= 0 || x >= 1000)
         return;
     this.$input.val('' + x).change();
