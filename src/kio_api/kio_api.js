@@ -9,6 +9,9 @@ import {initialize_controls} from './kio_controls'
 export function initializeKioProblem(ProblemClass, domNode, settings, basePath) {
     let problem = new ProblemClass(settings);
 
+    let load_best_from_server = true;
+    let load_autosaved = true;
+
     let loadingInfoDiv = createLoadingInfoElement();
     domNode.appendChild(loadingInfoDiv);
 
@@ -22,9 +25,6 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
         queue.loadManifest(manifest);
     } else
         finalizeInitialization(null, {loading_queue: null});
-
-    let load_best_from_server = true;
-    let load_autosaved = true;
 
     function finalizeInitialization(evt, {loading_queue}) {
         if (!load_best_from_server)
@@ -56,7 +56,7 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
         }
 
         kioapi.problem_is_initialized = true;
-    }
+    };
 
     function errorLoadingResources() {
         loadingInfoDiv.innerText = "Ошибка при загрузке задачи, попробуйте обновить страницу";
@@ -115,6 +115,7 @@ class KioApi {
                 this.problem.loadSolution(solution);
                 return true;
             } catch (e) {
+                console.debug('error loading solution', solution, e);
                 this.submitGaEvent(
                     'Failed to load solution',
                     JSON.stringify(solution),
@@ -123,6 +124,7 @@ class KioApi {
                 return false;
             }
         }
+        return true;
     }
 
     bestSolution() {
