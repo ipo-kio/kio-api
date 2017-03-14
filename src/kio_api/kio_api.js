@@ -27,9 +27,9 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
         finalizeInitialization(null, {loading_queue: null});
 
     function finalizeInitialization(evt, {loading_queue}) {
-        if (!load_best_from_server)
+        if (!load_best_from_server && console && console.debug)
             console.debug('trying to reinit without loading best from server');
-        if (!load_autosaved)
+        if (!load_autosaved && console && console.debug)
             console.debug('trying to reinit without loading autosaved');
 
         if (load_best_from_server && load_autosaved) //remove only the first time
