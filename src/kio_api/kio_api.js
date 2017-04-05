@@ -7,7 +7,7 @@ import {initialize_controls} from './kio_controls'
  * @param basePath optional, base path to resolve manifest element from
  */
 export function initializeKioProblem(ProblemClass, domNode, settings, basePath) {
-    let problem = new ProblemClass(settings);
+    let preloadManifest = getPreloadManifest(ProblemClass, settings);
 
     let load_best_from_server = true;
     let load_autosaved = true;
@@ -15,20 +15,24 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
     let loadingInfoDiv = createLoadingInfoElement();
     domNode.appendChild(loadingInfoDiv);
 
-    if (problem.preloadManifest) {
+    if (preloadManifest) {
         let queue = new createjs.LoadQueue(true, basePath);
         queue.on("complete", finalizeInitialization, null, false, {loading_queue: queue});
         queue.on("error", errorLoadingResources);
         queue.on("progress", loadingProgressChanged);
 
-        let manifest = problem.preloadManifest();
-        queue.loadManifest(manifest);
+        queue.loadManifest(preloadManifest);
     } else
         finalizeInitialization(null, {loading_queue: null});
 
     function finalizeInitialization(evt, {loading_queue}) {
+
+        let problem = new ProblemClass(settings);
+
+        loadingInfoDiv.innerText = 'Загрузка лучшего решения'; //TODO this is not shown because JS is not finished
         if (!load_best_from_server && console && console.debug)
             console.debug('trying to reinit without loading best from server');
+        loadingInfoDiv.innerText = 'Загрузка автоматически сохраненного решения';
         if (!load_autosaved && console && console.debug)
             console.debug('trying to reinit without loading autosaved');
 
@@ -56,7 +60,17 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
         }
 
         kioapi.problem_is_initialized = true;
-    };
+    }
+
+    function getPreloadManifest(ProblemClass, settings) {
+        if (ProblemClass.preloadManifest)
+            return ProblemClass.preloadManifest();
+        if (ProblemClass.prototype.preloadManifest) {//legacy variant, is deprecated
+            let problem = new ProblemClass(settings);
+            return problem.preloadManifest();
+        }
+        return false;
+    }
 
     function errorLoadingResources() {
         loadingInfoDiv.innerText = "Ошибка при загрузке задачи, попробуйте обновить страницу";
@@ -80,11 +94,12 @@ class KioApi {
         this.domNode = domNode;
         this.pid = dces2contest.get_problem_index($(domNode));
 
-        this.best_from_server = best_solutions[dces2contest.get_problem_index($(domNode))];
+        this.best_from_server = best_solutions[this.pid];
 
         this.best = null;
         this.bestResult = null;
-        this.autosave_localstorage_key = 'kio-problem-' + this.problem.id() + '-autosave';
+        this.autosave_localstorage_key = 'kio-problem-' + dces2contest.contest_local_storage_key(this.pid) + '-autosave';
+        this.autosave_localstorage_key_legacy = 'kio-problem-' + this.problem.id() + '-autosave';
 
         this.loading_queue = loading_queue;
 
@@ -115,7 +130,8 @@ class KioApi {
                 this.problem.loadSolution(solution);
                 return true;
             } catch (e) {
-                console.debug('error loading solution', solution, e);
+                if (console && console.debug)
+                    console.debug('error loading solution', solution, e);
                 this.submitGaEvent(
                     'Failed to load solution',
                     JSON.stringify(solution),
@@ -132,14 +148,19 @@ class KioApi {
     }
 
     autosavedSolution() {
-        return JSON.parse(localStorage.getItem(this.autosave_localstorage_key));
+        let sol_string = localStorage.getItem(this.autosave_localstorage_key);
+        if (sol_string == null)
+            sol_string = localStorage.getItem(this.autosave_localstorage_key_legacy);
+        return JSON.parse(sol_string);
     }
 
     autosaveSolution() {
         if (!this.problem_is_initialized)
             return;
 
-        localStorage.setItem(this.autosave_localstorage_key, JSON.stringify(this.problem.solution()))
+        let solution = this.problem.solution();
+        if (solution != null) //don't save null solutions
+            localStorage.setItem(this.autosave_localstorage_key, JSON.stringify(solution))
     }
 
     newRecord(solution, result) {

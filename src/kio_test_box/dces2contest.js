@@ -13,7 +13,7 @@ export function get_problem_index($problem_div) {
 export function submit_answer(problem_id, answer) {
     console.log('submitting to server', answer);
     let answerString = JSON.stringify(answer);
-    localStorage.setItem(get_local_storage_key(), answerString);
+    localStorage.setItem(contest_local_storage_key(), answerString);
 }
 
 export function save_problem_data(problem_id, data_key, value) {
@@ -28,7 +28,7 @@ export function get_problem_data(problem_id, data_key) {
 
 export function get_all_problem_data_keys(problem_id) {
     let res = [];
-    let problem_key = get_local_storage_key(problem_id);
+    let problem_key = contest_local_storage_key(problem_id);
     let prefix = problem_key + '-';
     let prefix_len = prefix.length;
 
@@ -45,15 +45,15 @@ export function get_all_problem_data_keys(problem_id) {
 const solutions_loaders_registry = {};
 
 //TODO it is better to use problem string id, but we do not have access to it here
-function get_local_storage_key(problem_id) {
+export function contest_local_storage_key(problem_id) {
     return 'contest-stub-storage-' + $('#stud-unique-id').text();
 }
 
 function get_local_storage_key_for_data_key(problem_id, data_key) {
-    return get_local_storage_key(problem_id) + '-' + data_key;
+    return contest_local_storage_key(problem_id) + '-' + data_key;
 }
 
 $(function () {
-    let best = JSON.parse(localStorage.getItem(get_local_storage_key()));
+    let best = JSON.parse(localStorage.getItem(contest_local_storage_key()));
     solutions_loaders_registry['kio-online']($('#problem'), best);
 });

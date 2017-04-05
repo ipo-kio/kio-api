@@ -95,7 +95,12 @@ TaskExample.prototype.parameters = function () {
     ];
 };
 
-TaskExample.prototype.preloadManifest = function() {
+/**
+ * Статический метод, возвращает manifest для библиотеки preload.js, метод не обязателен.
+ * Метод вызывается до создания объекта с задачей.
+ * @returns {[*]}
+ */
+TaskExample.preloadManifest = function() {
     return [
         {id: "1", src: "collatz_conjecture.png"}
     ];
