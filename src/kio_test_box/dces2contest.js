@@ -1,6 +1,6 @@
 import './static/index.html'
 import './static/jquery-1.7.2.min.js'
-import './static/preloadjs-0.6.2.min.js'
+import './static/preloadjs.min.js'
 
 export function register_solution_loader(problem_type, loader) {
     solutions_loaders_registry[problem_type] = loader;
