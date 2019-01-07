@@ -33,7 +33,7 @@ export function get_all_problem_data_keys(problem_id) {
     let prefix_len = prefix.length;
 
     //iterate all keys http://stackoverflow.com/a/8419509/1826120
-    for (let i = 0; i < localStorage.length; i++) {
+            for (let i = 0; i < localStorage.length; i++) {
         let key = localStorage.key(i);
         if (key.substr(0, prefix_len) == prefix)
             res.push(key.substr(prefix.length));

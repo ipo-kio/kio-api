@@ -35,7 +35,9 @@ TaskExample.prototype.id = function () {
  * Функция инициализации, в этой функции можно создавать интерфейс задачи и уже можно пользоваться KioApi
  * @param domNode dom-узел, который нужно наполнять содержимым задачи
  * @param kioapi ссылка на api для совершения всех действий с задачей
- * @param preferred_width width of domNode that is more
+ * @param preferred_width ширина div, в котором нужно создать условие задачи. Рекомендуется не использовать это
+ * значение, оно было необходимо только для не очень удачно сделанных лабораторий. В любом случае, ширина окна
+ * браузера может меняться в процессе работы с лабораторией.
  */
 TaskExample.prototype.initialize = function (domNode, kioapi, preferred_width) {
     console.log('preferred width in problem initialization', preferred_width);
