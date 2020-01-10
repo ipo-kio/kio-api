@@ -1,6 +1,7 @@
 import './static/index.html'
 import './static/jquery-1.7.2.min.js'
 import './static/preloadjs-1.0.0.min.js'
+import './static/easeljs-1.0.0.min.js'
 
 export function register_solution_loader(problem_type, loader) {
     solutions_loaders_registry[problem_type] = loader;
