@@ -181,6 +181,7 @@ class KioApi {
         this.autosaveSolution();
 
         let cmp = this.compareResults(result, this.bestResult);
+        console.debug('comparing results `new` `best` `result`', result, this.bestResult, cmp);
 
         if (cmp > 0) {
             this.bestResult = result;
@@ -200,16 +201,32 @@ class KioApi {
             return 1;
 
         let params = this.problem.parameters();
+        console.debug('params to compare', params);
         for (let param of params) {
             let val1 = result1[param.name];
             let val2 = result2[param.name];
+            console.debug("comparing param", param, val1, val2);
 
+            let val1_no_normalization = val1;
+            let val2_no_normalization = val2;
             if (param.normalize) {
                 val1 = param.normalize(val1);
                 val2 = param.normalize(val2);
             }
 
             let diff = param.ordering === 'maximize' ? val1 - val2 : val2 - val1;
+            console.debug(
+                "comparing param `param`, `ordering`, `val1 no norm`, `val2 no norm`, `val1`, `val2`, `diff`, `diff != 0`",
+                param,
+                param.ordering,
+                val1_no_normalization,
+                val1_no_normalization,
+                val1,
+                val2,
+                diff,
+                Math.abs(diff) > 1e-9
+            );
+
             if (Math.abs(diff) > 1e-9) {
                 if (diff > 0)
                     return 1;
