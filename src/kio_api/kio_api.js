@@ -242,6 +242,15 @@ class KioApi {
         return this.loading_queue.getResult(id);
     }
 
+    getResourceImageAsDataURL(id, mime='image/png', encoderOptions=null) {
+        let image = this.getResource(id);
+        let canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        canvas.getContext('2d').drawImage(image, 0, 0);
+        return canvas.toDataURL(mime, encoderOptions);
+    }
+
     init_view(domNode, problem) {
         let problemDiv = document.createElement('div');
         let controlsDiv = document.createElement('div');
