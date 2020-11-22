@@ -1,4 +1,5 @@
 import {initialize_controls} from './kio_controls'
+import {LOCALIZATION} from "./localization";
 
 /**
  * @param ProblemClass Problem class, it will be called as new ProblemClass(settings).
@@ -28,11 +29,12 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
     function finalizeInitialization(evt, {loading_queue}) {
 
         let problem = new ProblemClass(settings);
+        enrichProblem(problem);
 
-        loadingInfoDiv.innerText = 'Загрузка лучшего решения'; //TODO this is not shown because JS is not finished
+        loadingInfoDiv.innerText = KioApi.translate('Загрузка лучшего решения', settings); //TODO this is not shown because JS is not finished
         if (!load_best_from_server && console && console.debug)
             console.debug('trying to reinit without loading best from server');
-        loadingInfoDiv.innerText = 'Загрузка автоматически сохраненного решения';
+        loadingInfoDiv.innerText = KioApi.translate('Загрузка автоматически сохраненного решения', settings);
         if (!load_autosaved && console && console.debug)
             console.debug('trying to reinit without loading autosaved');
 
@@ -73,17 +75,37 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
     }
 
     function errorLoadingResources() {
-        loadingInfoDiv.innerText = "Ошибка при загрузке задачи, попробуйте обновить страницу";
+        loadingInfoDiv.innerText = KioApi.translate("Ошибка при загрузке задачи, попробуйте обновить страницу", settings);
     }
 
     function loadingProgressChanged(evt) {
-        loadingInfoDiv.innerText = "Загрузка " + Math.round(100 * evt.progress) + "%";
+        loadingInfoDiv.innerText = KioApi.translate("Загрузка ", settings) + Math.round(100 * evt.progress) + "%";
     }
 
     function createLoadingInfoElement() {
         let infoDiv = document.createElement("div");
         infoDiv.className = "loading-info";
         return infoDiv;
+    }
+
+    function enrichProblem(problem) {
+        Object.defineProperty(problem, 'settings', {get: () => settings});
+
+        let language = get_language_from_settings(settings);
+        Object.defineProperty(problem, 'language', {get: () => language});
+        problem.message = function(message_id) {
+            let localization = ProblemClass.LOCALIZATION;
+            if (!localization)
+                return message_id;
+            let messages = localization[language];
+            if (!messages || !messages[message_id]) {
+                if (language !== 'ru')
+                    console.debug('no localization for', message_id, 'language', language);
+                return message_id;
+            }
+
+            return messages[message_id];
+        }
     }
 }
 
@@ -270,6 +292,24 @@ class KioApi {
         while (domNode.firstChild)
             domNode.removeChild(domNode.firstChild);
     }
+
+    translate(message) {
+        return KioApi.translate(message, this.problem.settings);
+    }
+
+    static translate(message, settings) {
+        let language = get_language_from_settings(settings);
+        let l = LOCALIZATION[message];
+        if (!l || !l[language])
+            return message;
+        return l[language];
+    }
+}
+
+function get_language_from_settings(settings) {
+    if (settings && settings.language)
+        return settings.language;
+    return 'ru';
 }
 
 dces2contest.register_solution_loader('kio-online', load_kio_solution);

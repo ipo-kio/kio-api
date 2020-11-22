@@ -25,17 +25,17 @@ export class StoredSolutions {
 
         let title = document.createElement('div');
         title.className = 'title';
-        title.innerText = 'Сохраненные решения';
+        title.innerText = this.kio_api.translate('Сохраненные решения');
         this.domNode.appendChild(title);
 
         this.new_solution_node = document.createElement('div');
         this.new_solution_node.className = 'kio-base-new-solution';
         let label = document.createElement('span');
-        label.innerText = 'Назовите решение:';
+        label.innerText = this.kio_api.translate('Назовите решение:');
         this.new_name = document.createElement('input');
         this.new_solution_node.appendChild(label);
         this.new_solution_node.appendChild(this.new_name);
-        this.new_solution_node.appendChild(new Button('Сохранить', e => {
+        this.new_solution_node.appendChild(new Button(this.kio_api.translate('Сохранить'), e => {
             let name = this.new_name.value;
 
             if (!name)
@@ -124,10 +124,10 @@ class Solution {
         this.nameNode = document.createElement('span');
         this.nameNode.innerText = this.name;
 
-        this.loadButton = new Button('Загрузить', e => {
+        this.loadButton = new Button(this.kio_api.translate('Загрузить'), e => {
             this.kio_api.loadSolution(this.solution);
         }).domNode;
-        this.removeButton = new Button('Ctrl+Удалить', e => {
+        this.removeButton = new Button(this.kio_api.translate('Ctrl+Удалить'), e => {
             if (!e.ctrlKey)
                 return;
             //remove from dom

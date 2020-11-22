@@ -3,8 +3,8 @@ import './kio.scss'
 import {StoredSolutions} from './stored_solutions'
 
 export function initialize_controls(controlsDiv, kioapi) {
-    let results_info_panel = new InfoPanel("Результат", kioapi.problem.parameters());
-    let record_info_panel = new InfoPanel("Рекорд", kioapi.problem.parameters());
+    let results_info_panel = new InfoPanel(kioapi.translate("Результат"), kioapi.problem.parameters());
+    let record_info_panel = new InfoPanel(kioapi.translate("Рекорд"), kioapi.problem.parameters());
 
     kioapi.results_info_panel = results_info_panel;
     kioapi.record_info_panel = record_info_panel;
@@ -19,10 +19,10 @@ export function initialize_controls(controlsDiv, kioapi) {
     results_info_panel.domNode.className += " kio-base-results-info-panel";
     record_info_panel.domNode.className += " kio-base-record-info-panel";
 
-    let button_clear = new Button('Очистить решение', function () {
+    let button_clear = new Button(kioapi.translate('Очистить решение'), function () {
         kioapi.loadSolution(kioapi.emptySolution);
     });
-    let button_load_record = new Button('Загрузить рекорд', function () {
+    let button_load_record = new Button(kioapi.translate('Загрузить рекорд'), function () {
         kioapi.loadSolution(kioapi.best);
     });
 
