@@ -42,6 +42,7 @@ export function initializeKioProblem(ProblemClass, domNode, settings, basePath) 
             domNode.removeChild(loadingInfoDiv);
 
         let kioapi = new KioApi(problem, domNode, loading_queue);
+        kioapi.basePath = basePath;
 
         kioapi.init_view(domNode, problem);
 
@@ -126,6 +127,7 @@ class KioApi {
         this.loading_queue = loading_queue;
 
         this.problem_is_initialized = false;
+        this.basePath = '';
     }
 
     //FIXME here 1
